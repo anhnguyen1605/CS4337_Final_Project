@@ -1,107 +1,108 @@
 # 🎴 Playing Card Detection & Recognition using YOLOv8
 
-This project builds a complete computer vision pipeline to **detect and classify playing cards** in images using a YOLOv8 model trained on **52 card classes** (A–K × 4 suits).  
-The goal is to take an input image and output labeled bounding boxes such as:
+This project implements a complete computer vision pipeline to **detect
+and classify playing cards** using a YOLOv8 model trained on **52
+individual classes** (A--K × 4 suits).\
+Given an input image, the system outputs labeled bounding boxes such as:
 
-- **“7H” (Seven of Hearts)**  
-- **“KC” (King of Clubs)**  
-- **“10D” (Ten of Diamonds)**  
+-   **"7H" --- Seven of Hearts**\
+-   **"KC" --- King of Clubs**\
+-   **"10D" --- Ten of Diamonds**
 
-This README documents the full pipeline: dataset, training, inference, evaluation, and results.
+This repository documents the **dataset**, **training procedure**,
+**inference pipeline**, **results**, and **discussion**.
 
----
+## 📌 1. Project Overview
 
-# 📌 1. Project Overview
+Playing card recognition is a common computer vision task that includes:
 
-Playing card recognition is a classic computer vision challenge involving:
+-   **Object detection**\
+-   **Fine-grained classification**\
+-   **Handling real-world variations** such as rotation, blur, lighting,
+    shadows, and overlapping cards
 
-- Object detection  
-- Fine-grained classification  
-- Handling rotation, lighting changes, and overlapping cards  
+We chose **YOLOv8n**, the smallest YOLOv8 model, because it is
+lightweight, fast, and easy to train on CPU.
 
-This project uses **YOLOv8n**, a lightweight yet powerful object detection model, making it suitable for a student project and demo.
+## 📂 2. Dataset
 
----
+Dataset from Roboflow, with:
 
-# 📂 2. Dataset
+-   170 training images\
+-   20 validation images\
+-   10 test images\
+-   52 classes (AS, 7H, QC, ...)
 
-The dataset comes from **Roboflow**, containing:
+Folder structure:
 
-- **170 training images**  
-- **20 validation images**  
-- **10 test images**  
-- **52 classes**, each representing a unique card (e.g., "AS", "7H", "QC")
+    data/detection/
+    ├── train/
+    │   ├── images/
+    │   └── labels/
+    ├── valid/
+    │   ├── images/
+    │   └── labels/
+    ├── test/
+    │   ├── images/
+    │   └── labels/
+    └── data.yaml
 
-The folder structure is:
+## 🧠 3. Training the Model
 
-data/detection/
-├── train/
-│ ├── images/
-│ └── labels/
-├── valid/
-│ ├── images/
-│ └── labels/
-├── test/
-│ ├── images/
-│ └── labels/
-└── data.yaml
+Trained using YOLOv8n for 50 epochs.
 
-# 🧠 3. Training the Model
+Command:
 
-Training was performed using YOLOv8n with 50 epochs.
+    yolo detect train     model=yolov8n.pt     data=./data/detection/data.yaml     epochs=50     imgsz=640
 
-Training Command
-yolo detect train \ model=yolov8n.pt \ data=/Users/.../Final_Project/data/detection/data.yaml \ epochs=50 imgsz=640
+Outputs located in:
 
-### 📝 Notes
+    runs/detect/trainX/
 
-CPU training is slower but works fine.
+Includes metrics, curves, and best model weights.
 
-YOLO saves outputs to:
+## 🔍 4. Running Inference
 
-runs/detect/trainX/
+    yolo detect predict     model=runs/detect/train5/weights/best.pt     source=data/detection/test/images     conf=0.05
 
-Inside this folder are:
+Outputs saved to:
 
-weights/best.pt (final model)
+    runs/detect/predict/
 
-results.png
+## 📊 5. Results
 
-confusion_matrix.png
+Model detects and classifies most cards accurately. Handles rotation
+well but sometimes confuses similar red-suit cards or 6/9 shapes.
 
-PR_curve.png
-
-# 🔍 4. Running Inference (Prediction)
-YOLO CLI 
-yolo detect predict \ model=runs/detect/train5/weights/best.pt \ source=data/detection/test/images \ conf=0.05
-
-Predictions will be saved in:
-
-runs/detect/predict/
-
-# 5. Discussion
+## 💬 6. Discussion
 
 ### Strengths
-- The model performs well on clear, well-lit card images.
-- YOLOv8n is fast and efficient, even on CPU.
-- The system identifies all 52 card types reliably when visible.
+
+-   Fast inference\
+-   Handles all 52 classes\
+-   Works well on clear images
 
 ### Challenges
-- Some cards look very similar (e.g., 6H vs 9H).
-- Red suits (hearts & diamonds) can be confused.
-- Dataset size is small relative to 52 classes.
-- CPU training is slow.
+
+-   Small dataset\
+-   Red suits often confused\
+-   CPU training is slow
 
 ### Improvements
-- Train for 100+ epochs or use YOLOv8s/m.
-- Add more diverse training images.
-- Use image augmentation (rotation, blur, shadows).
-- Train on a GPU for faster experimentation.
 
-Overall, the project successfully demonstrates playing card detection & classification using modern deep learning.
+-   Train longer (100--200 epochs)\
+-   Use larger YOLO models\
+-   Add augmentation\
+-   Train on GPU
 
+## 🏁 7. Conclusion
 
-# 🏁 6. Conclusion
+The project successfully implements a YOLOv8-based playing card
+detection and classification system. Serves as foundation for real-time
+card recognition, poker automation, or AR applications.
 
-This project demonstrates a complete end-to-end playing card detection system using YOLOv8.
-The model can detect and classify 52 unique card types and serves as a solid foundation for more advanced card recognition tasks.
+## 📎 8. Acknowledgments
+
+-   Roboflow dataset\
+-   Ultralytics YOLOv8\
+-   CS4337 Computer Vision course
